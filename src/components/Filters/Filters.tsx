@@ -5,7 +5,7 @@ import { selectedFilterGenre, selectedAlphabeticOrder, eraseSearchedName } from 
 import { getProductsByFilters } from "../../redux/actions/productAction";
 import styles from "./Filters.module.scss";
 
-const optionOrder = ["A-Z", "Z-A"];
+const optionOrder = ["ASC", "DESC"];
 
 export const Filters = (flags:any) => {
 
