@@ -70,7 +70,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    filter: invert(1);
   }
 
   .send-changes img {
@@ -207,7 +206,7 @@
 
   .send-changes img {
     filter: invert(1);
-    width: 60px;
+    width: 80px;
   }
 
   .modal {

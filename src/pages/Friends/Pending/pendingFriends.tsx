@@ -22,6 +22,7 @@ export const PendingFr = (props:any) => {
 		dispatch(
 			resReque(
 				user?.email,
+				// @ts-ignore
 				friendsPending[0]?.UserEmail,
 				ev.currentTarget.value,
 			),
@@ -73,4 +74,3 @@ export const PendingFr = (props:any) => {
 		);
 	}
 };
-// @ts-ignor

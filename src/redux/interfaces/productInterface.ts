@@ -13,7 +13,7 @@ export interface productReducerState{
     selectedFilterPriceRangeData: Array<number>,
     selectedAlphabeticOrderData: string,
     selectedPriceOrderData: string,
-    todaysDiscount: any,
+    todaysDiscount: object,
 
     discountGloballyApplied: boolean,
     adminDiscount: boolean,

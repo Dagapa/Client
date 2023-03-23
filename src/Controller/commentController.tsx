@@ -3,7 +3,7 @@ import { Comment } from "../types";
 
 export const getAllProductComments = async (game: any) => {
   const productComments = await axios.get(
-    `https://grupo-cinco-production.up.railway.app/user/commentProduct?productId=${game.id}`
+    `https://games-store-v.netlify.app/user/commentProduct?productId=${game.id}`
   ); //productComments.data => [ {Comment: '' , date:'', id:number , productId:number, userId}, {…}, {…}, … ]
   const allCommentsObject: Comment = await productComments.data;
   return allCommentsObject;
@@ -30,7 +30,7 @@ export const postComment = async (
 
   await axios({
     method: "post",
-    url: "https://grupo-cinco-production.up.railway.app/user/newComment",
+    url: "https://games-store-v.netlify.app/user/newComment",
     data,
   });
   const newCommentObject = await getAllProductComments(game);
