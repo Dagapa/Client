@@ -9,7 +9,7 @@ export const addProductToWishList = async (email:string,id:number) => {
 } ;
 
 export const checkIfProductWasPurchased= async (email:string,productId:number) => {
-    const verify = await axios(`https://games-store-v.netlify.app/products/checkIfProductWasBought?email=${email}&idProduct=${productId}`);
+    const verify = await axios(`https://grupo-cinco-production.up.railway.app/products/checkIfProductWasBought?email=${email}&idProduct=${productId}`);
     const verifyBoolean = await verify.data;
     return verifyBoolean;
 };

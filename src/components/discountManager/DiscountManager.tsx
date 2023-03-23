@@ -94,7 +94,6 @@ export const DiscountManager = () => {
   }, [adminDiscount]);
 
   useEffect(() => {
-    // @ts-ignore
     setShowActiveDiscount(discountActive);
   }, [discountActive]);
 
@@ -185,3 +184,17 @@ export const DiscountManager = () => {
     </div>
   );
 };
+
+/*
+                {
+                    
+                    <div>
+                    {
+                        allDaysArray.map(day => {
+                            return(<button>{day}</button>)
+                        })
+                    }
+                </div>
+                    
+            }
+*/

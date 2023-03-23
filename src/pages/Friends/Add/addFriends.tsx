@@ -1,32 +1,53 @@
 import { useAppSelector, useAppDispatch } from '../../../redux/hooks/hooks';
-import { addFriend, confFriend } from '../../../redux/actions/friendAction';
+import { addFriend } from '../../../redux/actions/friendAction';
 import { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import styles from './addFriends.module.scss';
 
+
+interface FriendRequest {
+	emailUser: string;
+	emailFriend: string;
+}	
+
 export const AddiFriend = () => {
 	const dispatch = useAppDispatch();
 	const { user }: any = useAuth0();
-	const [emailFriendFromInput,setEmailFriendFromInput] = useState("");
 
-	const handlerAddFriend = (event:any) => {
-		const emailUser = user?.email;
+	let newFriendRequest: any = useAppSelector(
+		(state) => state.friendReducer.newFriendRequest,
+	);
+
+	const [friendRequest, setFriendRequest] = useState<FriendRequest>({
+		emailUser: user?.email,
+		emailFriend: '',
+	});
+
+	useEffect(() => {
+		if (newFriendRequest.length > 0) {
+			dispatch(addFriend(newFriendRequest[0], newFriendRequest[1]));
+		}
+	}, [newFriendRequest]);
+
+	const handleAddFriend = (event:any) => {
 		if (event.keyCode === 13) {
-			dispatch(addFriend(emailUser,emailFriendFromInput));
-			dispatch(confFriend(user?.email));
-			setEmailFriendFromInput("");
+			dispatch(addFriend(friendRequest.emailUser, friendRequest.emailFriend));
+			setFriendRequest({ emailUser: user?.email, emailFriend: '' });
 		};
 	};
 
 	return (
 		<div className={styles.container}>
+			{/* <h4 className={styles.send}>Send Friend Requests</h4> */}
 			<input
 				className={styles.input}
 				type='text'
-				value={emailFriendFromInput}
 				placeholder='send request'
-				onChange={(ev) => setEmailFriendFromInput(ev.target.value)}
-				onKeyDown={handlerAddFriend}
+				value={friendRequest.emailFriend}
+				onChange={(ev) =>
+					setFriendRequest({ ...friendRequest, emailFriend: ev.target.value })
+				}
+				onKeyDown={handleAddFriend}
 			/>
 		</div>
 	);

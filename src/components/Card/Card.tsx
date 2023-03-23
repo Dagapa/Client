@@ -4,7 +4,7 @@ import styles from "./Card.module.scss";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks/hooks";
 import { addShoppingCart } from "../../redux/actions/shoppingCartAction";
 import { addNewProductInShoppingCart } from "../../redux/actions/shoppingCartAction";
-import { addAmountForShoppingCartUser } from "../../redux/reducer/shoppingCartReducer";
+import { addPriceForFinalAmountCheckout } from "../../redux/reducer/shoppingCartReducer";
 import { saveShoppingCartInLocalStorage } from "../../redux/actions/localStorageAction";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -26,49 +26,53 @@ export const Card = ({
   genres,
   state,
 }: any) => {
-
-  const { user , isAuthenticated }: any = useAuth0();
-  const [changeClass,setChangeClass] = useState({classButton:styles.buttonAdd,classCard:styles.cardContainer});
+  const { user, isAuthenticated }: any = useAuth0();
+  const [changeClass, setChangeClass] = useState({
+    classButton: styles.buttonAdd,
+    classCard: styles.cardContainer,
+  });
   const [successMsg, setSuccessMsg] = useState("");
   const [control, setControl] = useState(-1);
   const [discountPrice,setDiscountPrice] = useState(0);
-  const [discountApplied, setDiscountApplied] = useState(false)
+  const [discountApplied, setDiscountApplied] = useState(false);
+  
+
   const dispatch = useAppDispatch();
-  let totalPrice = useAppSelector(
-    (state) => state.shoppingCartReducer.totalAmount
-  );
+  let totalPrice = useAppSelector((state) => state.shoppingCartReducer.finalPriceForCheckout)
   const [saveInLocalStorage, setSaveInLocalStorage] = useState(false);
-  var todaysDiscount = useAppSelector(
-    (state) => state.productReducer.todaysDiscount
-  );
-  console.log('discountPrice', discountPrice)
+  var todaysDiscount = useAppSelector((state) => state.productReducer.todaysDiscount);
+
   useEffect(() => {
     if (saveInLocalStorage === true) {
       dispatch(
-        saveShoppingCartInLocalStorage(listProductsShoppingCart, discountPrice)
+        saveShoppingCartInLocalStorage(listProductsShoppingCart, totalAmount)
       );
     }
     //esto verifica si el producto esta comprado, para cambiar el boton
-  },[control,user]);
+  }, [control, user]);
 
-  useEffect(()=>{
-    if(user){
-      checkIfProductWasPurchased(user.email,id)
-      .then(check => check?
-      setChangeClass({classButton:styles.buttonHide,classCard:styles.cardContainerBuy})
-      :setChangeClass({classButton:styles.buttonAdd,classCard:styles.cardContainer}));
+  useEffect(() => {
+    if (user) {
+      checkIfProductWasPurchased(user.email, id).then((check) =>
+        check
+          ? setChangeClass({
+              classButton: styles.buttonHide,
+              classCard: styles.cardContainerBuy,
+            })
+          : setChangeClass({
+              classButton: styles.buttonAdd,
+              classCard: styles.cardContainer,
+            })
+      );
     }
-  },[])
+  }, []);
 
-  useEffect(()  => { 
-    // @ts-ignore
-    if(parseFloat(price) !== 0 && todaysDiscount.discount !== 'No_Discount' && genres.includes(todaysDiscount.genre) && parseFloat(price) !==discountPrice && !discountApplied){
-      // @ts-ignore
+
+  useEffect(()  => {
+    if(todaysDiscount.discount !== 100 && genres.includes(todaysDiscount.genre) && parseFloat(price) !==discountPrice && !discountApplied){
       let finalPrice =  (((100 - todaysDiscount.discount) * parseFloat(price)) / 100);
-      // @ts-ignore
-      finalPrice = finalPrice.toFixed(2);
-      console.log('finalPrice', finalPrice)  
-      setDiscountApplied((prev) => (prev = true));
+      finalPrice = parseFloat(finalPrice.toFixed(2));
+      setDiscountApplied(prev => prev = true)
       setDiscountPrice(finalPrice);
     }
   }, [price]);
@@ -101,13 +105,16 @@ export const Card = ({
       if (user) {
         //si existe un usuario lo agrega al Carrito del USUARIO
         dispatch(addNewProductInShoppingCart(id, user.email));
-        dispatch(addAmountForShoppingCartUser(price));
       } else {
         dispatch(addShoppingCart(game));
         setControl(listProductsShoppingCart.length);
         setSaveInLocalStorage(true);
       }
-
+      if(discountPrice){
+        dispatch(addPriceForFinalAmountCheckout(discountPrice));
+      } else {
+        dispatch(addPriceForFinalAmountCheckout(parseFloat(price)));
+      }
       setSuccessMsg(ADDED_TO_CART);
     } else {
       setSuccessMsg(ALREADY_IN_THE_CART);
@@ -146,7 +153,6 @@ export const Card = ({
             ) : (
               <p>{`$${price}`}</p>
             )}
-
           </div>
           <div className={styles.addShoppingCart}>
             <div className={styles.containerButton}>
@@ -169,7 +175,7 @@ export const Card = ({
                   )}
                 </>
               ) : (
-                <p>Not avivable Game</p>
+                <p>Not available Game</p>
               )}
             </div>
             <p className={styles.msg}>{successMsg}</p>
